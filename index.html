@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volume Overload Assessment Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .assessment-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s;
+        }
+
+        .assessment-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .assessment-item h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .assessment-item p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ff0000;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .video-link:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .image-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .question {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .question h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .reference-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .reference-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .assessment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffeaa7 0%, #ffeaa7 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            padding: 0 4px;
+        }
+
+        .clinical-pearl {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .clinical-pearl h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Volume Overload Assessment Guide</h1>
+            <p>Clinical Examination, Radiographic & Laboratory Findings for Nonintubated Patients</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showSection('learning')">📚 Learning Module</button>
+            <button class="tab-btn" onclick="showSection('assessment')">✅ Self Assessment</button>
+            <button class="tab-btn" onclick="showSection('calculator')">🧮 BNP Calculator</button>
+            <button class="tab-btn" onclick="showSection('reference')">📖 Quick Reference</button>
+        </div>
+
+        <!-- Learning Module Section -->
+        <div id="learning" class="content-section active">
+            <div class="card">
+                <h2><span class="icon">🔍</span> Physical Examination Findings</h2>
+                <div class="assessment-grid">
+                    <div class="assessment-item">
+                        <h3>1. Jugular Venous Distention (JVD)</h3>
+                        <p>The <span class="highlight">most reliable physical finding</span>. JVD with the highest point of pulsation <strong>>3 cm</strong> above the sternal angle strongly suggests volume overload.</p>
+                        <a href="https://youtu.be/AWxbAg0E3E4?si=RLP53wXZrNxkCn2u" target="_blank" class="video-link">
+                            ▶️ Watch Examination Technique
+                        </a>
+                    </div>
+
+                    <div class="assessment-item">
+                        <h3>2. Lower Extremity Edema</h3>
+                        <p>Bilateral pitting edema in the lower extremities is a classic sign of fluid overload and venous congestion.</p>
+                        <div class="image-container">
+                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=300&fit=crop" alt="Lower Extremity Edema" onerror="this.src='https://via.placeholder.com/400x300/667eea/ffffff?text=Lower+Extremity+Edema'">
+                            <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Bilateral pitting edema indicating fluid overload</p>
+                        </div>
+                    </div>
+
+                    <div class="assessment-item">
+                        <h3>3. Pulmonary Crackles</h3>
+                        <p>Bibasilar or diffuse crackles on auscultation indicate pulmonary edema secondary to volume overload.</p>
+                        <div class="clinical-pearl">
+                            <h4>💡 Clinical Pearl</h4>
+                            <p>Listen at the lung bases posteriorly for fine, late-inspiratory crackles (rales) that don't clear with coughing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">📡</span> Point-of-Care Ultrasound (POCUS)</h2>
+                <div class="assessment-grid">
+                    <div class="assessment-item">
+                        <h3>4. Bilateral Pulmonary B-Lines</h3>
+                        <p>Multiple B-lines (comet-tail artifacts) extending from the pleural line to the bottom of the screen bilaterally indicate interstitial syndrome consistent with volume overload.</p>
+                        <a href="https://youtu.be/AsH115Jj-aU?si=RLB75eJXQsDxFjvK" target="_blank" class="video-link">
+                            ▶️ Watch Lung Ultrasound Technique
+                        </a>
+                    </div>
+
+                    <div class="assessment-item">
+                        <h3>5. Inferior Vena Cava (IVC) Assessment</h3>
+                        <p>IVC collapsibility index <strong>&lt;50%</strong> suggests elevated central venous pressure and volume overload.</p>
+                        <a href="https://youtu.be/HFpPPCS1wAw?si=1ORML-emJbqRDP9Z" target="_blank" class="video-link">
+                            ▶️ Watch IVC Measurement
+                        </a>
+                    </div>
+
+                    <div class="assessment-item">
+                        <h3>6. Jugular Venous Pressure (JVP) by Ultrasound</h3>
+                        <p>Ultrasonographic measurement of JVP <strong>&gt;8 cm</strong> increases the likelihood of volume overload.</p>
+                        <a href="https://youtu.be/ecA3IfUBK0Q?si=Ytje-YsB_dOi9jNj" target="_blank" class="video-link">
+                            ▶️ Watch JVP Ultrasound
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">🩻</span> Radiographic Findings</h2>
+                <div class="assessment-item">
+                    <h3>7. Vascular Congestion on Chest X-Ray</h3>
+                    <p>Chest radiography showing <span class="highlight">pulmonary vascular congestion</span> (cephalization, peribronchial cuffing, Kerley B lines, or cardiomegaly) increases the likelihood of intravascular volume overload.</p>
+                    <a href="https://youtu.be/5Uvu1nv_oF4?si=-JOgb0xO8sO3WwLd" target="_blank" class="video-link">
+                        ▶️ Watch CXR Interpretation
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">🧪</span> Laboratory Findings</h2>
+                <div class="assessment-item" style="border-left-color: #28a745; background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);">
+                    <h3>8. Brain Natriuretic Peptide (BNP)</h3>
+                    <p>A plasma BNP level of <span class="highlight">≥100 ng/mL</span> is the <strong>single best test</strong> to identify patients most likely to have volume overload.</p>
+                    <div class="clinical-pearl">
+                        <h4>🎯 Key Point</h4>
+                        <p>BNP >100 ng/mL has the highest diagnostic accuracy for volume overload compared to physical exam findings alone.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Section -->
+        <div id="assessment" class="content-section">
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                <div class="score-display" id="scoreDisplay">Question 1 of 8</div>
+
+                <div id="quizContent">
+                    <!-- Questions will be loaded here -->
+                </div>
+
+                <div id="quizResults" style="display: none;">
+                    <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">Assessment Complete! 🎉</h2>
+                    <div id="finalScore" style="text-align: center; font-size: 2rem; margin-bottom: 30px;"></div>
+                    <div id="performanceFeedback" style="text-align: center; margin-bottom: 30px;"></div>
+                    <button class="btn-primary" onclick="restartQuiz()" style="display: block; margin: 0 auto;">Restart Assessment</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BNP Calculator Section -->
+        <div id="calculator" class="content-section">
+            <div class="card">
+                <h2><span class="icon">🧮</span> BNP Interpretation Calculator</h2>
+                <div style="max-width: 500px; margin: 0 auto;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Enter BNP Level (ng/mL):</label>
+                        <input type="number" id="bnpInput" placeholder="e.g., 150" style="width: 100%; padding: 15px; border: 2px solid #667eea; border-radius: 10px; font-size: 1.1rem;">
+                    </div>
+                    <button class="btn-primary" onclick="interpretBNP()" style="width: 100%;">Interpret Result</button>
+                    
+                    <div id="bnpResult" style="margin-top: 30px; display: none;">
+                        <div style="padding: 25px; border-radius: 15px; text-align: center; font-size: 1.2rem; font-weight: 600;">
+                        </div>
+                    </div>
+
+                    <div class="reference-box" style="margin-top: 30px;">
+                        <h4>📋 Interpretation Guide</h4>
+                        <ul style="margin-left: 20px; line-height: 2;">
+                            <li><strong>&lt;100 ng/mL:</strong> Volume overload unlikely (Negative predictive value high)</li>
+                            <li><strong>100-400 ng/mL:</strong> Volume overload likely (Gray zone - consider clinical context)</li>
+                            <li><strong>&gt;400 ng/mL:</strong> Volume overload highly likely</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reference Section -->
+        <div id="reference" class="content-section">
+            <div class="card">
+                <h2><span class="icon">📋</span> Quick Reference Checklist</h2>
+                <div style="background: #f8f9fa; padding: 25px; border-radius: 15px;">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">Volume Overload Assessment Protocol</h3>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: #764ba2; margin-bottom: 15px;">Step 1: Physical Examination</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> JVD >3 cm above sternal angle
+                            </li>
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> Lower extremity edema (bilateral)
+                            </li>
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> Pulmonary crackles on auscultation
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: #764ba2; margin-bottom: 15px;">Step 2: Point-of-Care Ultrasound</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> Bilateral B-lines present
+                            </li>
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> IVC collapsibility <50%
+                            </li>
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> JVP >8 cm by ultrasound
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: #764ba2; margin-bottom: 15px;">Step 3: Imaging & Labs</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li style="padding: 10px; background: white; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> CXR: Vascular congestion present
+                            </li>
+                            <li style="padding: 10px; background: #fff3cd; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 10px; border: 2px solid #ffc107;">
+                                <input type="checkbox" style="width: 20px; height: 20px;"> BNP ≥100 ng/mL (Best single test)
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="clinical-pearl">
+                        <h4>⚡ Clinical Decision</h4>
+                        <p>If 3 or more findings present (especially BNP ≥100 ng/mL): <strong>High probability of volume overload</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="icon">📚</span> Evidence Summary</h2>
+                <div class="reference-box">
+                    <h4>Key Evidence Points:</h4>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>JVD >3 cm has the highest positive likelihood ratio among physical exam findings</li>
+                        <li>Bilateral B-lines on lung ultrasound indicate extravascular lung water</li>
+                        <li>IVC collapsibility <50% correlates with CVP >10 mmHg</li>
+                        <li>BNP ≥100 ng/mL is the single best discriminator for volume overload</li>
+                        <li>Combination of BNP + JVD has superior diagnostic accuracy than either alone</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz Questions
+        const questions = [
+            {
+                question: "What is the threshold for Jugular Venous Distention (JVD) to suggest volume overload?",
+                options: [">2 cm above sternal angle", ">3 cm above sternal angle", ">4 cm above sternal angle", ">5 cm above sternal angle"],
+                correct: 1,
+                explanation: "JVD with the highest point of pulsation more than 3 cm in a vertical line above the sternal angle is the most reliable physical finding for volume overload."
+            },
+            {
+                question: "What IVC collapsibility index suggests volume overload?",
+                options: [">75%", ">50%", "<50%", "<25%"],
+                correct: 2,
+                explanation: "An IVC collapsibility index of less than 50% indicates elevated central venous pressure and increases the likelihood of volume overload."
+            },
+            {
+                question: "What is the single best test to identify volume overload?",
+                options: ["Chest X-ray", "Physical examination", "BNP ≥100 ng/mL", "Echocardiogram"],
+                correct: 2,
+                explanation: "Plasma BNP level of 100 ng/mL or higher is the single best test to identify those most likely to have volume overload."
+            },
+            {
+                question: "What ultrasound finding indicates volume overload in the lungs?",
+                options: ["A-lines", "B-lines", "Consolidation", "Pleural effusion"],
+                correct: 1,
+                explanation: "Bilateral pulmonary B-lines (comet-tail artifacts) on point-of-care ultrasonography suggest interstitial syndrome consistent with volume overload."
+            },
+            {
+                question: "What JVP measurement by ultrasound increases likelihood of volume overload?",
+                options: [">5 cm", ">8 cm", ">10 cm", ">12 cm"],
+                correct: 1,
+                explanation: "Point-of-care ultrasonographic measurement of jugular venous pressure >8 cm increases the likelihood of volume overload."
+            },
+            {
+                question: "Which physical finding is associated with lower extremity edema?",
+                options: ["Unilateral pitting edema", "Bilateral pitting edema", "Non-pitting edema", "Cellulitis"],
+                correct: 1,
+                explanation: "Bilateral pitting edema in the lower extremities is a classic sign of systemic fluid overload and venous congestion."
+            },
+            {
+                question: "What chest X-ray finding suggests volume overload?",
+                options: ["Pneumothorax", "Vascular congestion", "Lobar consolidation", "Pneumonia"],
+                correct: 1,
+                explanation: "Vascular congestion on chest radiography (cephalization, peribronchial cuffing, Kerley B lines) increases the likelihood of intravascular volume overload."
+            },
+            {
+                question: "Which auscultation finding suggests pulmonary edema from volume overload?",
+                options: ["Wheezing", "Crackles (rales)", "Stridor", "Pleural rub"],
+                correct: 1,
+                explanation: "Crackles (rales) on auscultation, particularly bibasilar or diffuse fine crackles that don't clear with coughing, suggest pulmonary edema secondary to volume overload."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Initialize quiz if assessment section
+            if (sectionId === 'assessment') {
+                loadQuestion();
+            }
+        }
+
+        function loadQuestion() {
+            const quizContent = document.getElementById('quizContent');
+            const question = questions[currentQuestion];
+            
+            answered = false;
+            
+            let html = `
+                <div class="question">
+                    <h3>Question ${currentQuestion + 1}: ${question.question}</h3>
+                    <div class="options">
+            `;
+            
+            question.options.forEach((option, index) => {
+                html += `<div class="option" onclick="selectOption(${index})">${option}</div>`;
+            });
+            
+            html += `
+                    </div>
+                    <div class="explanation" id="explanation">
+                        <strong>Explanation:</strong> ${question.explanation}
+                        <br><br>
+                        <button class="btn-primary" onclick="nextQuestion()">Next Question</button>
+                    </div>
+                </div>
+            `;
+            
+            quizContent.innerHTML = html;
+            updateProgress();
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+            
+            answered = true;
+            const options = document.querySelectorAll('.option');
+            const question = questions[currentQuestion];
+            
+            options.forEach((option, i) => {
+                option.style.pointerEvents = 'none';
+                if (i === question.correct) {
+                    option.classList.add('correct');
+                } else if (i === index && i !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (index === question.correct) {
+                score++;
+            }
+            
+            document.getElementById('explanation').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('scoreDisplay').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+        }
+
+        function showResults() {
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('quizResults').style.display = 'block';
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('scoreDisplay').textContent = 'Assessment Complete';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('finalScore').innerHTML = `
+                You scored <span style="color: ${percentage >= 70 ? '#28a745' : '#dc3545'}">${score}/${questions.length}</span> (${percentage}%)
+            `;
+            
+            let feedback = '';
+            if (percentage >= 80) {
+                feedback = '🌟 Excellent! You have mastered volume overload assessment!';
+            } else if (percentage >= 60) {
+                feedback = '👍 Good job! Review the learning materials to improve further.';
+            } else {
+                feedback = '📚 Please review the learning module and try again.';
+            }
+            document.getElementById('performanceFeedback').textContent = feedback;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quizContent').style.display = 'block';
+            document.getElementById('quizResults').style.display = 'none';
+            loadQuestion();
+        }
+
+        function interpretBNP() {
+            const bnp = parseFloat(document.getElementById('bnpInput').value);
+            const resultDiv = document.getElementById('bnpResult');
+            const resultContent = resultDiv.querySelector('div');
+            
+            if (isNaN(bnp)) {
+                alert('Please enter a valid BNP value');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            
+            if (bnp < 100) {
+                resultContent.style.background = '#d4edda';
+                resultContent.style.color = '#155724';
+                resultContent.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                    <div>BNP ${bnp} ng/mL: Volume overload UNLIKELY</div>
+                    <div style="font-size: 0.9rem; margin-top: 10px; font-weight: normal;">Negative predictive value is high. Consider other causes of symptoms.</div>
+                `;
+            } else if (bnp >= 100 && bnp < 400) {
+                resultContent.style.background = '#fff3cd';
+                resultContent.style.color = '#856404';
+                resultContent.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+                    <div>BNP ${bnp} ng/mL: Volume overload LIKELY</div>
+                    <div style="font-size: 0.9rem; margin-top: 10px; font-weight: normal;">Gray zone. Correlate with clinical findings and physical examination.</div>
+                `;
+            } else {
+                resultContent.style.background = '#f8d7da';
+                resultContent.style.color = '#721c24';
+                resultContent.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🔴</div>
+                    <div>BNP ${bnp} ng/mL: Volume overload HIGHLY LIKELY</div>
+                    <div style="font-size: 0.9rem; margin-top: 10px; font-weight: normal;">Strong evidence for volume overload. Consider diuretic therapy.</div>
+                `;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Any initialization code
+        });
+    </script>
+</body>
+</html>
